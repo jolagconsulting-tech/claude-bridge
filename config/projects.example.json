@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "default": "example-app",
+  "projects": {
+    "example-app": {
+      "path": "/absolute/path/to/example-app",
+      "added_at": "2024-01-01T00:00:00.000Z",
+      "source": "cli"
+    },
+    "example-api": {
+      "path": "/absolute/path/to/example-api",
+      "added_at": "2024-01-01T00:00:00.000Z",
+      "source": "cli"
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "fixture",
+  "scripts": {
+    "build": "next build",
+    "seed:remote": "bash scripts/seed-remote.sh",
+    "db:test": "bash scripts/db-test.sh",
+    "release": "npm publish"
+  }
+}

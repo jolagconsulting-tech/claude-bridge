@@ -1,0 +1,20 @@
+node_modules/
+
+# Holds BRIDGE_TOKEN — anyone with it can execute code on this machine.
+.env
+.env.*
+!.env.example
+
+# Runtime state now lives outside the checkout (see BRIDGE_STATE_DIR); these
+# remain for pre-move checkouts and rollback copies.
+state/
+state.pre-move-*/
+logs/
+snapshots/
+
+# Local config: the project registry and the generated hook settings both
+# contain absolute paths from this machine. Only the example is tracked.
+config/*.json
+!config/projects.example.json
+
+.DS_Store

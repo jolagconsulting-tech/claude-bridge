@@ -1,0 +1,21 @@
+{
+  "name": "claude-bridge",
+  "version": "0.1.0",
+  "description": "Remote MCP bridge from a Claude.ai chat to a local Claude Code session",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test/policy.test.mjs && node test/projects.test.mjs && node test/seed.test.mjs && node test/provider-health.test.mjs && node test/provider-pin.test.mjs",
+    "start": "node src/server.mjs",
+    "bridge": "node bin/bridge.mjs",
+    "tunnel": "bash scripts/tunnel.sh"
+  },
+  "keywords": [],
+  "author": "JOLAG Consulting FZE",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "express": "^5.2.1",
+    "zod": "^4.4.3"
+  }
+}

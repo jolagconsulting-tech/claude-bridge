@@ -8,6 +8,10 @@
 - The session is continuous, so you can work across many messages without re-explaining the project each time.
 - A kill switch stops everything mid-run, and every action is appended to an audit log you can read afterwards.
 
+What it looks like from the chat:
+
+![A Claude.ai chat asking the bridge to run npm test, and the reply showing 246 tests passing across five suites](docs/demo.png)
+
 Before you expose it to the internet, read the **Security warning** below: this tool lets a remote AI run commands on your machine.
 
 ## What it is

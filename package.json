@@ -1,7 +1,7 @@
 {
   "name": "claude-bridge",
   "version": "0.1.0",
-  "description": "Remote MCP bridge from a Claude.ai chat to a local Claude Code session",
+  "description": "Remote MCP server that lets a Claude.ai chat drive a Claude Code session on your own machine, with a safety policy, audit log and kill switch",
   "main": "index.js",
   "scripts": {
     "test": "node test/policy.test.mjs && node test/projects.test.mjs && node test/seed.test.mjs && node test/provider-health.test.mjs && node test/provider-pin.test.mjs",

@@ -12,7 +12,12 @@ PORT="$(grep -E '^BRIDGE_PORT=' .env 2>/dev/null | cut -d= -f2 || true)"
 PORT="${PORT:-8787}"
 TOKEN="$(grep -E '^BRIDGE_TOKEN=' .env 2>/dev/null | cut -d= -f2 || true)"
 
-if ! command -v cloudflared >/dev/null 2>&1; then
+# Binary location: an explicit $CLOUDFLARED wins, then whatever is on PATH
+# (Linux, Intel Homebrew under /usr/local, MacPorts), then the Apple-Silicon
+# Homebrew path as a last resort.
+CFD="${CLOUDFLARED:-$(command -v cloudflared || echo /opt/homebrew/bin/cloudflared)}"
+
+if ! [ -x "$CFD" ]; then
   echo "cloudflared is not installed."
   echo
   echo "Install it with:"
@@ -36,4 +41,4 @@ echo "the connector URL to paste into Claude.ai is:"
 echo
 echo "    https://<something>.trycloudflare.com/${TOKEN}/mcp"
 echo
-exec cloudflared tunnel --url "http://127.0.0.1:${PORT}"
+exec "$CFD" tunnel --url "http://127.0.0.1:${PORT}"

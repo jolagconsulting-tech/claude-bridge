@@ -20,7 +20,10 @@ if [ -z "$HOSTNAME_ARG" ]; then
 fi
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-CFD="${CLOUDFLARED:-/opt/homebrew/bin/cloudflared}"
+# Binary location: an explicit $CLOUDFLARED wins, then whatever is on PATH
+# (Linux, Intel Homebrew under /usr/local, MacPorts), then the Apple-Silicon
+# Homebrew path as a last resort.
+CFD="${CLOUDFLARED:-$(command -v cloudflared || echo /opt/homebrew/bin/cloudflared)}"
 TUNNEL_NAME="${BRIDGE_TUNNEL_NAME:-claude-bridge}"
 # Label of your own launchd agent for the tunnel, if you run one. Only used for
 # the restart hint printed at the end.

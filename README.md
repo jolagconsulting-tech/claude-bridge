@@ -1,5 +1,15 @@
 # CLAUDE-BRIDGE
 
+## Why use this
+
+- Keep working from the Claude.ai chat, wherever you are, while Claude Code does the hands-on work in a project folder on your own machine.
+- Every run comes back with what actually happened — real diffs, the commands it ran with their output, and any errors — rather than a summary you have to take on trust.
+- Ordinary development work (edits, builds, tests, installing dependencies, local git) runs without stopping to ask. Risky things — deploys, live secrets, real external accounts, deleting data — are refused and handed back to you to decide.
+- The session is continuous, so you can work across many messages without re-explaining the project each time.
+- A kill switch stops everything mid-run, and every action is appended to an audit log you can read afterwards.
+
+Before you expose it to the internet, read the **Security warning** below: this tool lets a remote AI run commands on your machine.
+
 ## What it is
 
 A remote MCP server that lets a **Claude.ai chat conversation drive a real Claude Code session** on the machine it runs on.
@@ -89,6 +99,39 @@ https://<random>.trycloudflare.com/<BRIDGE_TOKEN>/mcp
 `npm run bridge -- token` prints the token. Add it in Claude.ai under **Settings → Connectors → Add custom connector**.
 
 > The quick-tunnel hostname changes every restart. For a stable URL, use a named Cloudflare tunnel or an ngrok reserved domain.
+
+`scripts/tunnel.sh` finds `cloudflared` via `$CLOUDFLARED`, then your `PATH`, then `/opt/homebrew/bin/cloudflared` — set `CLOUDFLARED` if yours is somewhere else.
+
+### Stable URL with a named Cloudflare tunnel (optional, macOS)
+
+Two scripts exist for running the bridge behind a hostname that doesn't change. Both are optional; the quick tunnel above needs neither.
+
+**`scripts/setup-named-tunnel.sh <hostname>`** — run once, by you, interactively. It:
+
+1. runs `cloudflared tunnel login` (opens a browser against *your* Cloudflare account) unless `~/.cloudflared/cert.pem` already exists;
+2. creates a tunnel named `$BRIDGE_TUNNEL_NAME` (default `claude-bridge`) if it doesn't exist yet;
+3. **overwrites `~/.cloudflared/config.yml`** so that hostname routes to `http://127.0.0.1:$BRIDGE_PORT`;
+4. creates the DNS record with `cloudflared tunnel route dns`;
+5. prints the connector URL, and a `launchctl kickstart` hint using `$BRIDGE_LAUNCHD_LABEL`.
+
+It creates real resources in your Cloudflare account, which is why it is a manual step and not something the bridge does for you. **Prerequisite:** the zone must already be active on Cloudflare nameservers — a named tunnel resolves through `<UUID>.cfargotunnel.com`, which only exists inside Cloudflare's edge, so a CNAME from a third-party DNS provider cannot reach it. If step 4 fails, everything else is still configured; re-run it once the zone is active.
+
+**`scripts/tunnel-service.sh`** — the long-running tunnel process. It waits for the bridge's own `/health` to answer, then runs the named tunnel if `~/.cloudflared/config.yml` exists and the tunnel resolves, and otherwise falls back to a quick tunnel so you are not offline while the named one is being set up. Either way it writes the current public URL to `cloudflared.url` in the state directory, so nothing has to scrape a log to find out where the bridge is.
+
+Environment variables these two read:
+
+| Variable | Default | Used for |
+|---|---|---|
+| `CLOUDFLARED` | `cloudflared` on `PATH`, else `/opt/homebrew/bin/cloudflared` | path to the binary |
+| `BRIDGE_TUNNEL_NAME` | `claude-bridge` | the named tunnel to create and run |
+| `BRIDGE_LAUNCHD_LABEL` | `com.example.claude-bridge-tunnel` | only the restart hint that gets printed |
+| `BRIDGE_STATE_DIR` | `~/Library/Application Support/claude-bridge/state` | where `cloudflared.url` is written |
+| `BRIDGE_PORT` | `8787`, read from `.env` | the local port to tunnel to |
+
+Two things this repo does **not** ship, so that you know what you'd be wiring up yourself:
+
+- **No launchd plist.** `tunnel-service.sh` is written to be run by a launchd agent, and `BRIDGE_LAUNCHD_LABEL` only affects a printed hint — you create the agent yourself. The script also runs fine in the foreground.
+- **Nothing writes `tunnel.url`.** `bridge doctor`'s `public_http` check reads `tunnel.url` in the state directory, while these scripts write `cloudflared.url`. Until you create `tunnel.url` yourself, that one check reports `no tunnel.url recorded`.
 
 ### Authentication
 
@@ -216,6 +259,10 @@ BLOCKED (deploy_or_publish) — this action pushes commits to a remote
 
 ## How it works
 
+![Claude.ai chat reaches a tunnel over HTTPS with a token, which reaches the bridge server; every tool call passes through the policy guard, which either allows it to run in Claude Code inside a registered project folder or blocks it and reports back that a human is needed. Everything is appended to the audit log, and a kill switch pauses the bridge.](docs/how-it-works.svg)
+
+In more detail, including how the child session is spawned:
+
 ```
 Claude.ai chat
    │  MCP over HTTPS (token auth)
@@ -308,3 +355,5 @@ See also the **Security warning** at the top of this README — this section is 
 ## License
 
 MIT — see [LICENSE](LICENSE).
+
+Built by JOLAG Consulting FZE.

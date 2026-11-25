@@ -10,7 +10,10 @@
 set -uo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-CFD="${CLOUDFLARED:-/opt/homebrew/bin/cloudflared}"
+# Binary location: an explicit $CLOUDFLARED wins, then whatever is on PATH
+# (Linux, Intel Homebrew under /usr/local, MacPorts), then the Apple-Silicon
+# Homebrew path as a last resort.
+CFD="${CLOUDFLARED:-$(command -v cloudflared || echo /opt/homebrew/bin/cloudflared)}"
 PORT="$(grep -E '^BRIDGE_PORT=' "$ROOT/.env" 2>/dev/null | cut -d= -f2)"
 PORT="${PORT:-8787}"
 

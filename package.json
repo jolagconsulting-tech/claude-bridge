@@ -9,9 +9,23 @@
     "bridge": "node bin/bridge.mjs",
     "tunnel": "bash scripts/tunnel.sh"
   },
-  "keywords": [],
+  "keywords": [
+    "mcp",
+    "claude",
+    "claude-code",
+    "model-context-protocol",
+    "ai-agents"
+  ],
   "author": "JOLAG Consulting FZE",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jolagconsulting-tech/claude-bridge.git"
+  },
+  "homepage": "https://github.com/jolagconsulting-tech/claude-bridge#readme",
+  "bugs": {
+    "url": "https://github.com/jolagconsulting-tech/claude-bridge/issues"
+  },
   "type": "module",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",

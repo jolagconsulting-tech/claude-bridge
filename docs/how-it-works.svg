@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="976" height="364" viewBox="0 0 976 364" role="img" aria-label="Flow diagram: a Claude.ai chat reaches a tunnel over HTTPS with a token, which reaches the bridge server, which passes every tool call through the policy guard; allowed actions run in Claude Code inside a registered project folder, blocked actions are paused and reported back for a human. Everything is appended to the audit log, and a kill switch pauses the bridge.">
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="7" refX="7" refY="3.5" orient="auto">
+      <path d="M0,0 L7,3.5 L0,7 z" fill="#6b7280"/>
+    </marker>
+    <style>
+      .t { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+      .title { font-size: 15px; font-weight: 600; fill: #1f2328; }
+      .sub { font-size: 11.5px; fill: #5a6270; }
+      .edge { font-size: 11px; fill: #5a6270; }
+      .note { font-size: 12px; fill: #1f2328; }
+      .noteb { font-size: 12px; font-weight: 600; fill: #1f2328; }
+      .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 11.5px; fill: #5a6270; }
+    </style>
+  </defs>
+
+  <!-- opaque background so the diagram reads in both light and dark themes -->
+  <rect x="0" y="0" width="976" height="364" fill="#ffffff"/>
+
+  <!-- main chain -->
+  <g class="t">
+    <rect x="16" y="96" width="140" height="64" rx="8" fill="#f6f7f9" stroke="#c9ced6"/>
+    <text class="title" x="86" y="124" text-anchor="middle">Claude.ai chat</text>
+    <text class="sub" x="86" y="142" text-anchor="middle">you, in a conversation</text>
+
+    <rect x="216" y="96" width="120" height="64" rx="8" fill="#f6f7f9" stroke="#c9ced6"/>
+    <text class="title" x="276" y="124" text-anchor="middle">tunnel</text>
+    <text class="sub" x="276" y="142" text-anchor="middle">HTTPS + token</text>
+
+    <rect x="396" y="96" width="140" height="64" rx="8" fill="#f6f7f9" stroke="#c9ced6"/>
+    <text class="title" x="466" y="124" text-anchor="middle">bridge server</text>
+    <text class="mono" x="466" y="142" text-anchor="middle">src/server.mjs</text>
+
+    <rect x="596" y="96" width="140" height="64" rx="8" fill="#fff7e6" stroke="#e0b765"/>
+    <text class="title" x="666" y="124" text-anchor="middle">policy guard</text>
+    <text class="mono" x="666" y="142" text-anchor="middle">hooks/guard.mjs</text>
+
+    <!-- outcomes -->
+    <rect x="810" y="30" width="150" height="64" rx="8" fill="#f1f8f2" stroke="#9cc3a4"/>
+    <text class="title" x="885" y="56" text-anchor="middle">Claude Code</text>
+    <text class="sub" x="885" y="74" text-anchor="middle">in a registered project</text>
+
+    <rect x="810" y="162" width="150" height="64" rx="8" fill="#fdf2f2" stroke="#d9a2a2"/>
+    <text class="title" x="885" y="188" text-anchor="middle">needs a human</text>
+    <text class="sub" x="885" y="206" text-anchor="middle">paused, reported back</text>
+  </g>
+
+  <!-- arrows along the chain. Arrowheads are explicit triangles rather than
+       markers, so they render the same in every SVG renderer. -->
+  <g fill="none" stroke="#6b7280" stroke-width="1.6">
+    <path d="M156,128 L203,128"/>
+    <path d="M336,128 L383,128"/>
+    <path d="M536,128 L583,128"/>
+    <!-- branch: allowed -->
+    <path d="M736,128 L770,128 L770,62 L797,62"/>
+    <!-- branch: blocked -->
+    <path d="M736,128 L770,128 L770,194 L797,194"/>
+  </g>
+  <g fill="#6b7280">
+    <polygon points="203,123.5 211,128 203,132.5"/>
+    <polygon points="383,123.5 391,128 383,132.5"/>
+    <polygon points="583,123.5 591,128 583,132.5"/>
+    <polygon points="797,57.5 805,62 797,66.5"/>
+    <polygon points="797,189.5 805,194 797,198.5"/>
+  </g>
+
+  <g class="t">
+    <text class="edge" x="764" y="88" text-anchor="end">allow</text>
+    <text class="edge" x="764" y="172" text-anchor="end">deny</text>
+    <text class="edge" x="666" y="80" text-anchor="middle">every tool call</text>
+  </g>
+
+  <!-- the session returns its result to the chat -->
+  <g fill="none" stroke="#9aa1ab" stroke-width="1.4" stroke-dasharray="4 4">
+    <path d="M885,94 L885,112 L786,112 L786,262 L120,262 L120,169"/>
+  </g>
+  <polygon points="115.5,169 120,161 124.5,169" fill="#9aa1ab"/>
+  <g class="t">
+    <text class="edge" x="452" y="255" text-anchor="middle">diffs, command output, errors, and anything blocked — returned to the chat</text>
+  </g>
+
+  <!-- footer notes -->
+  <g class="t">
+    <rect x="16" y="288" width="944" height="60" rx="8" fill="#f6f7f9" stroke="#c9ced6"/>
+    <text class="noteb" x="32" y="310">Audit log</text>
+    <text class="note" x="96" y="310">every allowed tool call, every command, every block — appended to</text>
+    <text class="mono" x="482" y="310">logs/audit.jsonl</text>
+    <text class="noteb" x="32" y="332">Kill switch</text>
+    <text class="note" x="104" y="332">pauses the bridge and kills the run in flight; the guard re-checks it before every tool call</text>
+  </g>
+</svg>
